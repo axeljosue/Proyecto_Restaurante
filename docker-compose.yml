@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  # 1. Servicio de Base de Datos PostgreSQL
+  postgres_db:
+    image: postgres:16-alpine
+    container_name: ebs_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: elbuensabor_secret_pass
+      POSTGRES_DB: el_buen_sabor_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ebs_network
+
+  # 2. Servicio de API Backend (Express + Node.js)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ebs_backend
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:elbuensabor_secret_pass@postgres_db:5432/el_buen_sabor_db?schema=public
+      JWT_SECRET: super_secret_jwt_key_el_buen_sabor_2026
+    depends_on:
+      - postgres_db
+    networks:
+      - ebs_network
+
+  # 3. Servicio de Frontend (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ebs_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - ebs_network
+
+volumes:
+  postgres_data:
+
+networks:
+  ebs_network:
+    driver: bridge
