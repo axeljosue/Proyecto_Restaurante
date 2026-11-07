@@ -3,7 +3,9 @@ import express from "express";
 import { pool } from "./config/db";
 import authRoutes from "./routes/authRoutes";
 import categoriaRoutes from "./routes/categoriaRoutes";
+import materiasPrimasRoutes from "./routes/materiasPrimasRoutes";
 import productoRoutes from "./routes/productoRoutes";
+import recetasRoutes from "./routes/recetasRoutes";
 
 const app = express();
 
@@ -32,6 +34,8 @@ api.get("/health", async (_req, res) => {
 api.use("/auth", authRoutes);
 api.use("/categorias", categoriaRoutes);
 api.use("/productos", productoRoutes);
+api.use("/materias-primas", materiasPrimasRoutes);
+api.use("/recetas", recetasRoutes);
 
 app.use("/api/v1", api);
 
