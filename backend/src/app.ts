@@ -4,6 +4,7 @@ import { pool } from "./config/db";
 import authRoutes from "./routes/authRoutes";
 import categoriaRoutes from "./routes/categoriaRoutes";
 import materiasPrimasRoutes from "./routes/materiasPrimasRoutes";
+import pedidosRoutes from "./routes/pedidosRoutes";
 import produccionRoutes from "./routes/produccionRoutes";
 import productoRoutes from "./routes/productoRoutes";
 import recetasRoutes from "./routes/recetasRoutes";
@@ -38,6 +39,7 @@ api.use("/productos", productoRoutes);
 api.use("/materias-primas", materiasPrimasRoutes);
 api.use("/recetas", recetasRoutes);
 api.use("/produccion", produccionRoutes);
+api.use("/pedidos", pedidosRoutes);
 
 app.use("/api/v1", api);
 
