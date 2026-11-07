@@ -1,9 +1,13 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AdminShell } from "./components/admin/AdminShell";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { CarritoProvider } from "./context/CarritoContext";
-import { AdminPage } from "./pages/AdminPage";
+import { AdminDashboardView } from "./pages/admin/AdminDashboardView";
+import { MateriasPrimasAdminView } from "./pages/admin/MateriasPrimasAdminView";
+import { ProduccionAdminView } from "./pages/admin/ProduccionAdminView";
+import { RecetasBOMAdminView } from "./pages/admin/RecetasBOMAdminView";
 import { ClienteMenuView } from "./pages/cliente/ClienteMenuView";
 import { MisPedidosView } from "./pages/cliente/MisPedidosView";
 import { HomePage } from "./pages/HomePage";
@@ -37,7 +41,18 @@ export default function App() {
               }
             >
               <Route path="/recepcion" element={<RecepcionPedidosView />} />
-              <Route path="/admin" element={<AdminPage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute roles={["Administrador"]} />}>
+              <Route path="/admin" element={<AdminShell />}>
+                <Route index element={<AdminDashboardView />} />
+                <Route
+                  path="materias-primas"
+                  element={<MateriasPrimasAdminView />}
+                />
+                <Route path="recetas" element={<RecetasBOMAdminView />} />
+                <Route path="produccion" element={<ProduccionAdminView />} />
+              </Route>
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

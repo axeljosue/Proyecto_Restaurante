@@ -11,6 +11,7 @@ export interface Producto {
   precio: number;
   disponible: boolean;
   imagen_url: string | null;
+  stock_terminado: number;
   categoria: {
     id: number;
     nombre: string;

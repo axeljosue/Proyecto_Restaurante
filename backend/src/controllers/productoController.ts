@@ -8,6 +8,7 @@ interface ProductoRow {
   precio: string;
   disponible: boolean;
   imagen_url: string | null;
+  stock_terminado: string;
   categoria_id: number | null;
   categoria_nombre: string | null;
 }
@@ -19,6 +20,7 @@ interface Producto {
   precio: number;
   disponible: boolean;
   imagen_url: string | null;
+  stock_terminado: number;
   categoria: {
     id: number;
     nombre: string;
@@ -33,6 +35,7 @@ function mapProducto(row: ProductoRow): Producto {
     precio: Number(row.precio),
     disponible: row.disponible,
     imagen_url: row.imagen_url,
+    stock_terminado: Number(row.stock_terminado),
     categoria:
       row.categoria_id === null || row.categoria_nombre === null
         ? null
@@ -53,6 +56,7 @@ export async function listarProductos(
          p.precio,
          p.disponible,
          p.imagen_url,
+         p.stock_terminado,
          c.id AS categoria_id,
          c.nombre AS categoria_nombre
        FROM productos p
