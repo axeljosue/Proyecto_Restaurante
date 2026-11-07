@@ -1,0 +1,14 @@
+\# Reglas de Proyecto — El Buen Sabor (Monolito Modular)
+
+\## Arquitectura y Tech Stack 
+- Frontend: React (Vite) + Tailwind CSS. 
+- Backend: Node.js + Express (TypeScript). 
+- Base de Datos: PostgreSQL. 
+- Arquitectura: Monolito modular con prefijo de rutas \`/api/v1\`.
+
+\## Convenciones de Código - En Express, separar claramente Rutas, Controladores, Servicios y Modelos. - Manejar todas las respuestas de API en formato JSON estandarizado: \`{ success: boolean, data: any, message?: string }\`. - Usar async/await y bloques try/catch en todos los controladores. - Nunca usar el tipo \`any\` en TypeScript cuando se conozca la interfaz.
+
+\## Seguridad y Secretos - NUNCA escribir contraseñas, JWT secrets o API keys directamente en el código. Usar \`process.env\`. - Verificar que las consultas SQL prevengan inyección usando consultas parametrizadas o un ORM/Query Builder.
+
+\## Estilo Git - Sugerir nombres de commits basados en convenciones: \`feat:\`, \`fix:\`, \`docs:\`, \`refactor:\`.
+
