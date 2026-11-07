@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function AdminPage() {
@@ -22,13 +23,16 @@ export function AdminPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <section className="rounded-xl bg-white p-5 shadow-sm">
-          <h2 className="font-medium">Pedidos</h2>
+        <Link
+          to="/recepcion"
+          className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-stone-200 transition hover:ring-brand-500"
+        >
+          <h2 className="font-medium">Recepción de pedidos</h2>
           <p className="mt-2 text-sm text-stone-600">
-            Gestión y verificación de transferencias.
+            Validar transferencias, mostrador y avance de estados.
           </p>
-        </section>
-        <section className="rounded-xl bg-white p-5 shadow-sm">
+        </Link>
+        <section className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-stone-200">
           <h2 className="font-medium">Producción / MRP</h2>
           <p className="mt-2 text-sm text-stone-600">
             Solo Administrador en las APIs de producción.

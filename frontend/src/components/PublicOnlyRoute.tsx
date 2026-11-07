@@ -1,14 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { homePathForRole } from "../utils/navigation";
 
 export function PublicOnlyRoute() {
   const { isAuthenticated, user } = useAuth();
 
   if (isAuthenticated) {
-    if (user?.rol_nombre === "Administrador" || user?.rol_nombre === "Recepcionista") {
-      return <Navigate to="/admin" replace />;
-    }
-    return <Navigate to="/menu" replace />;
+    return <Navigate to={homePathForRole(user)} replace />;
   }
 
   return <Outlet />;

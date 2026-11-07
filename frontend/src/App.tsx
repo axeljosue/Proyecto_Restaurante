@@ -8,6 +8,7 @@ import { ClienteMenuView } from "./pages/cliente/ClienteMenuView";
 import { MisPedidosView } from "./pages/cliente/MisPedidosView";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
+import { RecepcionPedidosView } from "./pages/recepcion/RecepcionPedidosView";
 import { RegisterPage } from "./pages/RegisterPage";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage";
 
@@ -35,6 +36,7 @@ export default function App() {
                 <ProtectedRoute roles={["Administrador", "Recepcionista"]} />
               }
             >
+              <Route path="/recepcion" element={<RecepcionPedidosView />} />
               <Route path="/admin" element={<AdminPage />} />
             </Route>
 

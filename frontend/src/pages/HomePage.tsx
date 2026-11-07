@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { homePathForRole } from "../utils/navigation";
 
 export function HomePage() {
   const { isAuthenticated, user } = useAuth();
@@ -17,12 +18,7 @@ export function HomePage() {
       <div className="mt-8 flex flex-wrap gap-3">
         {isAuthenticated ? (
           <Link
-            to={
-              user?.rol_nombre === "Administrador" ||
-              user?.rol_nombre === "Recepcionista"
-                ? "/admin"
-                : "/menu"
-            }
+            to={homePathForRole(user)}
             className="rounded-lg bg-brand-700 px-5 py-2.5 font-medium text-white"
           >
             Continuar

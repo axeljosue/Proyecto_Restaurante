@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   actualizarEstadoPedido,
   crearPedido,
+  crearPedidoAsistido,
   listarMisPedidos,
   listarPedidos,
 } from "../controllers/pedidosController";
@@ -12,6 +13,11 @@ const router = Router();
 router.use(verificarToken);
 
 router.post("/", requerirRol("Cliente"), crearPedido);
+router.post(
+  "/asistido",
+  requerirRol("Recepcionista", "Administrador"),
+  crearPedidoAsistido
+);
 router.get("/mis-pedidos", requerirRol("Cliente"), listarMisPedidos);
 router.get(
   "/",

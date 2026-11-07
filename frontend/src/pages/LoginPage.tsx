@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { homePathForRole } from "../utils/navigation";
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -22,14 +23,9 @@ export function LoginPage() {
 
     try {
       const user = await login({ email, password });
-      if (
-        user.rol_nombre === "Administrador" ||
-        user.rol_nombre === "Recepcionista"
-      ) {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate(from === "/login" ? "/menu" : from, { replace: true });
-      }
+      const destino =
+        from && from !== "/login" ? from : homePathForRole(user);
+      navigate(destino, { replace: true });
     } catch {
       setError("No se pudo iniciar sesión. Verifica tus credenciales.");
     } finally {
