@@ -28,7 +28,7 @@ services:
     environment:
       PORT: 4000
       NODE_ENV: development
-      DATABASE_URL: postgresql://neondb_owner:npg_U2lKkHIturT0@ep-tiny-glade-becmigf1-pooler.c-9.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      DATABASE_URL: postgresql://neondb_owner:npg_ckghoN7E9sOe@ep-tiny-glade-becmigf1-pooler.c-9.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
       JWT_SECRET: super_secret_jwt_key_el_buen_sabor_2026
     depends_on:
       - postgres_db

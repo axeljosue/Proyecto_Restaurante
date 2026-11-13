@@ -1,20 +1,19 @@
 import { FormEvent, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { homePathForRole } from "../utils/navigation";
 
 export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const from =
-    (location.state as { from?: { pathname?: string } } | null)?.from
-    ?.pathname;
+//  const from =
+//    (location.state as { from?: { pathname?: string } } | null)?.from
+//    ?.pathname;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -23,8 +22,7 @@ export function LoginPage() {
 
     try {
       const user = await login({ email, password });
-      const destino =
-        from && from !== "/login" ? from : homePathForRole(user);
+      const destino = homePathForRole(user);
       navigate(destino, { replace: true });
     } catch {
       setError("No se pudo iniciar sesión. Verifica tus credenciales.");
