@@ -1,15 +1,17 @@
-# Etapa 1: Build de React con Vite 
-FROM node:20-alpine AS build 
+# Etapa 1: Build de React con Vite
+FROM node:20-alpine AS build
 
-WORKDIR /app 
+WORKDIR /app
 
-COPY package*.json ./ 
+COPY package*.json ./
 
-RUN npm install 
+# Obligar al contenedor a entrar en modo desarrollo para descargar tsc y vite
+ENV NODE_ENV=development
+RUN npm install
 
-COPY . . 
+COPY . .
 
-RUN npm run build 
+RUN npm run build
 
 # Etapa 2: Servidor de producción optimizado con Nginx 
 FROM nginx:1.27-alpine 

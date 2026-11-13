@@ -14,7 +14,7 @@ export function LoginPage() {
 
   const from =
     (location.state as { from?: { pathname?: string } } | null)?.from
-      ?.pathname ?? "/menu";
+    ?.pathname;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
