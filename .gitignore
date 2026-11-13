@@ -1,6 +1,7 @@
 .env
 .env.*
 *.pem
+docker-compose.yml
 
 # Dependencias 
 node_modules/
