@@ -3,7 +3,8 @@ import { useAuth } from "../../context/AuthContext";
 
 const links = [
   { to: "/admin", label: "Dashboard", end: true },
-  { to: "/admin/materias-primas", label: "Inventario", end: false },
+  { to: "/admin/productos", label: "Productos", end: false },
+  { to: "/admin/materias-primas", label: "Materias Primas", end: false },
   { to: "/admin/recetas", label: "Recetas BOM", end: false },
   { to: "/admin/produccion", label: "Producción / MRP", end: false },
 ];

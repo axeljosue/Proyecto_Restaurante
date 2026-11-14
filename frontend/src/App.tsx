@@ -7,6 +7,7 @@ import { CarritoProvider } from "./context/CarritoContext";
 import { AdminDashboardView } from "./pages/admin/AdminDashboardView";
 import { MateriasPrimasAdminView } from "./pages/admin/MateriasPrimasAdminView";
 import { ProduccionAdminView } from "./pages/admin/ProduccionAdminView";
+import { ProductosAdminView } from "./pages/admin/ProductosAdminView";
 import { RecetasBOMAdminView } from "./pages/admin/RecetasBOMAdminView";
 import { ClienteMenuView } from "./pages/cliente/ClienteMenuView";
 import { MisPedidosView } from "./pages/cliente/MisPedidosView";
@@ -46,6 +47,7 @@ export default function App() {
             <Route element={<ProtectedRoute roles={["Administrador"]} />}>
               <Route path="/admin" element={<AdminShell />}>
                 <Route index element={<AdminDashboardView />} />
+                <Route path="productos" element={<ProductosAdminView />} />
                 <Route
                   path="materias-primas"
                   element={<MateriasPrimasAdminView />}
