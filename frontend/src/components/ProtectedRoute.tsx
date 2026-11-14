@@ -10,8 +10,10 @@ export function ProtectedRoute({
   roles,
   redirectTo = "/login",
 }: ProtectedRouteProps) {
-  const { isAuthenticated, hasRole } = useAuth();
+  const { isAuthenticated, hasRole, user } = useAuth();
   const location = useLocation();
+
+  console.log("Verificando permisos. Usuario:", user, "Roles requeridos:", roles);
 
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} replace state={{ from: location }} />;
