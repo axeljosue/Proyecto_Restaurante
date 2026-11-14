@@ -1,0 +1,156 @@
+name: CI/CD Docker -> GHCR -> Cloud Deploy
+
+on:
+  push:
+    branches: [master, main, DOCKERCICD]
+  pull_request:
+    branches: [master, main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-test-push:
+    name: Build, smoke test and push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create CI Docker network
+        run: docker network create ebs-ci
+
+      - name: Start PostgreSQL for smoke test
+        run: |
+          docker run -d \
+            --name ebs_postgres_ci \
+            --network ebs-ci \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=elbuensabor_secret_pass \
+            -e POSTGRES_DB=el_buen_sabor_db \
+            postgres:16-alpine
+
+          echo "Waiting for PostgreSQL..."
+          for i in $(seq 1 30); do
+            if docker exec ebs_postgres_ci pg_isready -U postgres >/dev/null 2>&1; then
+              echo "PostgreSQL is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "PostgreSQL did not become ready in time"
+          docker logs ebs_postgres_ci
+          exit 1
+
+      - name: Build test image
+        run: docker build -t elbuensabor:test ./backend
+
+      - name: Smoke test (health endpoint)
+        run: |
+          set -e
+          docker run -d \
+            --name ebs_backend_ci \
+            --network ebs-ci \
+            -p 4000:4000 \
+            -e PORT=4000 \
+            -e NODE_ENV=test \
+            -e DATABASE_URL=postgresql://postgres:elbuensabor_secret_pass@ebs_postgres_ci:5432/el_buen_sabor_db \
+            -e JWT_SECRET=ci_smoke_jwt_secret \
+            elbuensabor:test
+
+          echo "Waiting 5 seconds for API startup..."
+          sleep 5
+
+          if ! curl -sf http://localhost:4000/api/v1/health; then
+            echo ""
+            echo "Smoke test FAILED"
+            echo "----- backend logs -----"
+            docker logs ebs_backend_ci || true
+            echo "----- postgres logs -----"
+            docker logs ebs_postgres_ci || true
+            exit 1
+          fi
+
+          echo ""
+          echo "Smoke test PASSED"
+
+      - name: Stop smoke containers
+        if: always()
+        run: |
+          docker rm -f ebs_backend_ci ebs_postgres_ci || true
+          docker network rm ebs-ci || true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata (tags and labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.event_name != 'pull_request' }}
+            type=sha,prefix=sha-,format=short
+
+      - name: Build and push validated image to GHCR
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-cloud:
+    name: Deploy to cloud
+    needs: build-test-push
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Redeploy on Railway or Render
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          set -e
+
+          if [ -n "${RAILWAY_TOKEN}" ] && [ -n "${RAILWAY_SERVICE_ID}" ]; then
+            echo "Triggering Railway redeploy for service ${RAILWAY_SERVICE_ID}..."
+            npm install -g @railway/cli
+            railway redeploy --service "${RAILWAY_SERVICE_ID}" --yes
+            echo "Railway redeploy requested."
+            exit 0
+          fi
+
+          if [ -n "${RENDER_DEPLOY_HOOK_URL}" ]; then
+            echo "Triggering Render deploy hook..."
+            curl -sf -X POST "${RENDER_DEPLOY_HOOK_URL}"
+            echo ""
+            echo "Render deploy hook accepted."
+            exit 0
+          fi
+
+          echo "No cloud deploy secrets configured."
+          echo "Set RAILWAY_TOKEN + RAILWAY_SERVICE_ID, or RENDER_DEPLOY_HOOK_URL."
+          echo "GHCR image publish from build-test-push remains available."

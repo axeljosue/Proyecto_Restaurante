@@ -5,20 +5,18 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# Obligar al contenedor a entrar en modo desarrollo para descargar tsc y vite
-ENV NODE_ENV=development
-RUN npm install
+# Incluir devDependencies (typescript, vite, tailwind) aunque NODE_ENV=production
+RUN npm install --include=dev
 
 COPY . .
 
 RUN npm run build
 
-# Etapa 2: Servidor de producción optimizado con Nginx 
-FROM nginx:1.27-alpine 
+# Etapa 2: Servidor de producción optimizado con Nginx
+FROM nginx:1.27-alpine
 
-# Copiar la compilación estática hacia el directorio de Nginx 
-COPY --from=build /app/dist /usr/share/nginx/html 
+COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80 
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
